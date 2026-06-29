@@ -1,4 +1,4 @@
-# @storykit/mcp
+# storykit-mcp
 
 > MCP server for the **StoryKit asset library** — search and embed free, generated design blocks
 > (charts, widgets, illustrations, themes) straight from your editor.
@@ -25,7 +25,7 @@ It runs with `npx` — no global install needed.
 ### Claude Code
 
 ```bash
-claude mcp add storykit -- npx -y @storykit/mcp
+claude mcp add storykit -- npx -y storykit-mcp
 ```
 
 ### Cursor
@@ -35,7 +35,7 @@ claude mcp add storykit -- npx -y @storykit/mcp
 ```json
 {
   "mcpServers": {
-    "storykit": { "command": "npx", "args": ["-y", "@storykit/mcp"] }
+    "storykit": { "command": "npx", "args": ["-y", "storykit-mcp"] }
   }
 }
 ```
@@ -47,7 +47,7 @@ claude mcp add storykit -- npx -y @storykit/mcp
 ```json
 {
   "mcp": {
-    "storykit": { "type": "local", "command": ["npx", "-y", "@storykit/mcp"], "enabled": true }
+    "storykit": { "type": "local", "command": ["npx", "-y", "storykit-mcp"], "enabled": true }
   }
 }
 ```
@@ -57,7 +57,7 @@ claude mcp add storykit -- npx -y @storykit/mcp
 ```json
 {
   "mcpServers": {
-    "storykit": { "command": "npx", "args": ["-y", "@storykit/mcp"] }
+    "storykit": { "command": "npx", "args": ["-y", "storykit-mcp"] }
   }
 }
 ```
