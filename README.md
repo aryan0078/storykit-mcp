@@ -6,17 +6,19 @@
 
 It wraps the free, public [StoryKit Asset API](https://asset.storykit.space/docs) as read-only MCP
 tools. No API key, no account, no on-demand generation — just the thousands of already-generated
-blocks, embeddable in one line.
+blocks, embeddable in one line with your own data via `data-sk-items`.
 
 ## Tools
 
 | Tool | What it does |
 |------|--------------|
-| `search_assets` | Search the library by text + kind (`CHART_VARIANT`, `INTERACTIVE`, `THEME`, …). |
-| `get_asset` | Full JSON for an asset: descriptor + html/css/js (when self-contained) + embed snippet. |
-| `get_embed_snippet` | Just the one-line `<div data-sk-asset>` + runtime snippet. |
-| `list_themes` | Published themes (palette + vibe) for the theme engine. |
-| `bundle_url` | A `.zip` download URL for one or more assets. |
+| `search_assets` | Search by text + kind (`CHART_VARIANT`, `COMPONENT`, `INTERACTIVE`, `THEME`, …). Returns `dataSchema` when the asset accepts rows. |
+| `get_asset` | Full JSON: descriptor, `dataSchema`, html/css/js (when self-contained), embed snippet, bundle links. |
+| `get_embed_snippet` | Copy-paste `<div data-sk-asset>` + `sk-embed.js` with example `data-sk-items`. |
+| `list_themes` | Published themes (palette + vibe). |
+| `list_chart_families` | 43+ Datawrapper-aligned chart families → StoryKit `blockType`s. |
+| `list_theme_families` | Editorial theme palette catalog. |
+| `bundle_url` | `.zip` download URL for one or more assets; optional `theme` id for multi-bundle. |
 
 ## Install
 
@@ -64,8 +66,33 @@ claude mcp add storykit -- npx -y storykit-mcp
 
 ## Try it
 
-> “Find a StoryKit gauge chart and add it to my landing page.”
-> “Search StoryKit for a comparison block and give me the embed snippet.”
+> “Find a StoryKit column chart and embed it with my Q1–Q3 sales numbers.”
+> “Search StoryKit for a stat-row component and give me the embed snippet with `data-sk-items`.”
+> “List chart families and pick a dumbbell plot skin.”
+
+## Examples (curl equivalents)
+
+```bash
+# Search bar charts
+curl -s "https://asset.storykit.space/api/v1/assets?kind=CHART_VARIANT&q=bar&size=5"
+
+# Full asset + dataSchema
+curl -s "https://asset.storykit.space/api/v1/assets/1757"
+
+# Chart families catalog
+curl -s "https://asset.storykit.space/api/v1/chart-families"
+
+# Multi-bundle with theme
+# → https://asset.storykit.space/api/v1/bundle.zip?ids=1757,1760&theme=1756
+```
+
+Embed with your data:
+
+```html
+<div data-sk-asset="1757"
+     data-sk-items='[{"label":"Q1","value":64},{"label":"Q2","value":41}]'></div>
+<script src="https://asset.storykit.space/sk-embed.js" async></script>
+```
 
 ## Configuration
 

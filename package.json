@@ -1,6 +1,6 @@
 {
   "name": "storykit-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for the StoryKit asset library (storykit.space) — search and embed free, generated design blocks (charts, widgets, illustrations, themes) from Claude Code, Cursor, opencode or any MCP client.",
   "license": "MIT",
   "author": "aryan0078 (https://storykit.space)",
