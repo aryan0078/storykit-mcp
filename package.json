@@ -1,0 +1,40 @@
+{
+  "name": "@storykit/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for the StoryKit asset library — search and embed free, generated design blocks from your editor.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "storykit-mcp": "src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "storykit",
+    "design",
+    "assets",
+    "components",
+    "claude",
+    "cursor",
+    "opencode"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aryan0078/storykit-mcp.git"
+  },
+  "homepage": "https://asset.storykit.space/mcp"
+}
