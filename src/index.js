@@ -31,12 +31,13 @@ async function api(path) {
 const text = (obj) => ({ content: [{ type: 'text', text: typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2) }] })
 const fail = (e) => ({ isError: true, content: [{ type: 'text', text: `Error: ${e.message || e}` }] })
 
-const server = new McpServer({ name: 'storykit', version: '0.2.0' })
+const server = new McpServer({ name: 'storykit', version: '0.3.0' })
 
 server.tool(
   'search_assets',
   'Search the StoryKit design library. Returns matching blocks (id, name, kind, blockType, embed snippet, dataSchema when the asset accepts rows). '
     + 'Kinds: CHART_VARIANT, ANIMATION, TEXT_STYLE, THEME, COMPONENT, SVG, INTERACTIVE. '
+    + 'INTERACTIVE covers the animated/self-contained widgets: draggable knobs + gauges + faders, skeuomorphic controls, blueprint cutaways, maps, quizzes. '
     + 'Sort: newest (default), used, name. Paginate with page + size (max 50).',
   {
     query: z.string().optional().describe('free text, e.g. "column chart" or "stat row"'),
@@ -103,7 +104,7 @@ server.tool(
 
 server.tool(
   'list_chart_families',
-  'List Datawrapper-aligned chart families (43+) mapped to StoryKit blockTypes — each family has whenToUse, a sample variant, and sampleData. '
+  'List Datawrapper-aligned chart families (65+) mapped to StoryKit blockTypes — each family has whenToUse, a sample variant, and sampleData. '
     + 'Search kind=CHART_VARIANT to find published skins for a family.',
   {},
   async () => {

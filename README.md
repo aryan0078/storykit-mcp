@@ -8,29 +8,50 @@ It wraps the free, public [StoryKit Asset API](https://asset.storykit.space/docs
 tools. No API key, no account, no on-demand generation — just the thousands of already-generated
 blocks, embeddable in one line with your own data via `data-sk-items`.
 
+**Two ways to connect:**
+
+- **Remote (recommended, no install):** point any streamable-HTTP MCP client at
+  `https://asset.storykit.space/api/v1/mcp` — the same tools, hosted.
+- **Local (stdio):** run this package with `npx -y storykit-mcp`.
+
 ## Tools
 
 | Tool | What it does |
 |------|--------------|
-| `search_assets` | Search by text + kind (`CHART_VARIANT`, `COMPONENT`, `INTERACTIVE`, `THEME`, …). Returns `dataSchema` when the asset accepts rows. |
+| `search_assets` | Search by text + kind (`CHART_VARIANT`, `COMPONENT`, `INTERACTIVE`, `THEME`, …). `INTERACTIVE` = draggable knobs/gauges/faders, skeuomorphic controls, blueprint cutaways, maps, quizzes. Returns `dataSchema` when the asset accepts rows. |
 | `get_asset` | Full JSON: descriptor, `dataSchema`, html/css/js (when self-contained), embed snippet, bundle links. |
 | `get_embed_snippet` | Copy-paste `<div data-sk-asset>` + `sk-embed.js` with example `data-sk-items`. |
 | `list_themes` | Published themes (palette + vibe). |
-| `list_chart_families` | 43+ Datawrapper-aligned chart families → StoryKit `blockType`s. |
+| `list_chart_families` | 65+ Datawrapper-aligned chart families → StoryKit `blockType`s. |
 | `list_theme_families` | Editorial theme palette catalog. |
 | `bundle_url` | `.zip` download URL for one or more assets; optional `theme` id for multi-bundle. |
 
 ## Install
 
-It runs with `npx` — no global install needed.
+### Remote (any streamable-HTTP client — nothing to install)
 
-### Claude Code
+```bash
+# Claude Code
+claude mcp add --transport http storykit https://asset.storykit.space/api/v1/mcp
+```
+
+```json
+{
+  "mcpServers": {
+    "storykit": { "url": "https://asset.storykit.space/api/v1/mcp" }
+  }
+}
+```
+
+### Local (stdio) — runs with `npx`, no global install needed
+
+#### Claude Code
 
 ```bash
 claude mcp add storykit -- npx -y storykit-mcp
 ```
 
-### Cursor
+#### Cursor
 
 `.cursor/mcp.json`:
 
@@ -42,7 +63,7 @@ claude mcp add storykit -- npx -y storykit-mcp
 }
 ```
 
-### opencode
+#### opencode
 
 `opencode.json`:
 
@@ -54,7 +75,7 @@ claude mcp add storykit -- npx -y storykit-mcp
 }
 ```
 
-### Windsurf / generic MCP client
+#### Windsurf / generic MCP client
 
 ```json
 {
