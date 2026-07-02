@@ -1,132 +1,96 @@
 # storykit-mcp
 
-> MCP server for the **StoryKit asset library** — search and embed free, generated design blocks
-> (charts, widgets, illustrations, themes) straight from your editor.
-> _Created with love by Story Kit._ 🍮
+**Give your AI a design library and a printing press.**
 
-It wraps the free, public [StoryKit Asset API](https://asset.storykit.space/docs) as read-only MCP
-tools. No API key, no account, no on-demand generation — just the thousands of already-generated
-blocks, embeddable in one line with your own data via `data-sk-items`.
+An MCP server for [StoryKit](https://storykit.space) — search a free library of generated design
+blocks (charts, animated widgets, illustrations, themes) and embed them anywhere with one line,
+**or let your AI author a whole interactive visual essay and publish it on storykit.space — no API
+key, no signup.** _Created with love by Story Kit._ 🍮
 
-**Two ways to connect:**
-
-- **Remote (recommended, no install):** point any streamable-HTTP MCP client at
-  `https://asset.storykit.space/api/v1/mcp` — the same tools, hosted.
-- **Local (stdio):** run this package with `npx -y storykit-mcp`.
-
-## Tools
-
-| Tool | What it does |
-|------|--------------|
-| `search_assets` | Search by text + kind (`CHART_VARIANT`, `COMPONENT`, `INTERACTIVE`, `THEME`, …). `INTERACTIVE` = draggable knobs/gauges/faders, skeuomorphic controls, blueprint cutaways, maps, quizzes. Returns `dataSchema` when the asset accepts rows. |
-| `get_asset` | Full JSON: descriptor, `dataSchema`, html/css/js (when self-contained), embed snippet, bundle links. |
-| `get_embed_snippet` | Copy-paste `<div data-sk-asset>` + `sk-embed.js` with example `data-sk-items`. |
-| `list_themes` | Published themes (palette + vibe). |
-| `list_chart_families` | 65+ Datawrapper-aligned chart families → StoryKit `blockType`s. |
-| `list_theme_families` | Editorial theme palette catalog. |
-| `bundle_url` | `.zip` download URL for one or more assets; optional `theme` id for multi-bundle. |
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aryan0078/storykit-mcp/main/assets/asset-3174.png" width="46%" alt="A StoryKit EQ-curve widget with the default paper theme">
+  <img src="https://raw.githubusercontent.com/aryan0078/storykit-mcp/main/assets/asset-themed.png" width="46%" alt="The same widget re-inked gold on dark via URL theme params">
+</p>
+<p align="center"><em>The same live asset, re-inked per page with two URL params — no CSS written.</em></p>
 
 ## Install
 
-### Remote (any streamable-HTTP client — nothing to install)
+**Remote (recommended — no install):**
 
 ```bash
-# Claude Code
 claude mcp add --transport http storykit https://asset.storykit.space/api/v1/mcp
 ```
 
-```json
-{
-  "mcpServers": {
-    "storykit": { "url": "https://asset.storykit.space/api/v1/mcp" }
-  }
-}
-```
-
-### Local (stdio) — runs with `npx`, no global install needed
-
-#### Claude Code
+**Local (stdio):**
 
 ```bash
 claude mcp add storykit -- npx -y storykit-mcp
 ```
 
-#### Cursor
+Cursor / Hermes / Kiro / opencode / Antigravity / Windsurf configs: see the
+[setup guide](https://asset.storykit.space/mcp).
 
-`.cursor/mcp.json`:
+## What your AI can do with it
 
-```json
-{
-  "mcpServers": {
-    "storykit": { "command": "npx", "args": ["-y", "storykit-mcp"] }
-  }
-}
+### 1 · Embed free design blocks (no key)
+
+```
+"Find a StoryKit column chart and embed it with Q1–Q3 sales."
 ```
 
-#### opencode
-
-`opencode.json`:
-
-```json
-{
-  "mcp": {
-    "storykit": { "type": "local", "command": ["npx", "-y", "storykit-mcp"], "enabled": true }
-  }
-}
-```
-
-#### Windsurf / generic MCP client
-
-```json
-{
-  "mcpServers": {
-    "storykit": { "command": "npx", "args": ["-y", "storykit-mcp"] }
-  }
-}
-```
-
-## Try it
-
-> “Find a StoryKit column chart and embed it with my Q1–Q3 sales numbers.”
-> “Search StoryKit for a stat-row component and give me the embed snippet with `data-sk-items`.”
-> “List chart families and pick a dumbbell plot skin.”
-
-## Examples (curl equivalents)
-
-```bash
-# Search bar charts
-curl -s "https://asset.storykit.space/api/v1/assets?kind=CHART_VARIANT&q=bar&size=5"
-
-# Full asset + dataSchema
-curl -s "https://asset.storykit.space/api/v1/assets/1757"
-
-# Chart families catalog
-curl -s "https://asset.storykit.space/api/v1/chart-families"
-
-# Multi-bundle with theme
-# → https://asset.storykit.space/api/v1/bundle.zip?ids=1757,1760&theme=1756
-```
-
-Embed with your data:
+Your AI searches the library, then drops one line into your page:
 
 ```html
 <div data-sk-asset="1757"
-     data-sk-items='[{"label":"Q1","value":64},{"label":"Q2","value":41}]'></div>
+     data-sk-items='[{"label":"Q1","value":64},{"label":"Q2","value":41}]'
+     data-sk-accent="#b8860b" data-sk-paper="#14110b"></div>
 <script src="https://asset.storykit.space/sk-embed.js" async></script>
 ```
 
-## Configuration
+Data via `data-sk-items`; colors via `data-sk-accent/paper/ink/surface/accent2`. Sandboxed,
+always up-to-date, zero CSS to maintain.
 
-| Env var | Default | Purpose |
-|---------|---------|---------|
-| `STORYKIT_API_BASE` | `https://asset.storykit.space` | Override the API origin. |
-| `STORYKIT_API_KEY` | — | Optional free key for a higher rate limit ([mint one](https://asset.storykit.space/on-demand)). |
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aryan0078/storykit-mcp/main/assets/asset-knob.png" width="46%" alt="A drag-interactable rotary knob widget from the library">
+  <img src="https://raw.githubusercontent.com/aryan0078/storykit-mcp/main/assets/asset-3172.png" width="46%" alt="An animated interactive widget from the library">
+</p>
 
-## Develop
+### 2 · Publish a visual essay authored by YOUR model (no key, no signup)
 
-```bash
-npm install
-STORYKIT_API_BASE=http://localhost:8080 npm start
+```
+"Research the gold market and publish a StoryKit visual essay about it."
 ```
 
-MIT licensed. Built on the [Model Context Protocol](https://modelcontextprotocol.io).
+Your AI reads the StorySpec contract, authors the story as structured JSON (never code — visuals
+come from the reviewed asset library), and imports it. Back come two links:
+
+- **shareUrl** — the story, private, reachable only by that link
+- **claimUrl** — open it and sign in at storykit.space to keep the story
+  (premium accounts make it permanent, public and SEO-indexed)
+
+Digests too: `format: "digest"` authors a prose-led briefing.
+
+## Tools
+
+| Tool | What it does |
+| --- | --- |
+| `search_assets` | Search the library by text + kind (charts, widgets, SVG, themes…) |
+| `get_asset` | Full JSON for one asset: descriptor, dataSchema, embed snippet |
+| `get_embed_snippet` | One-line copy-paste embed with example data |
+| `list_themes` / `list_theme_families` | Published palettes for theming |
+| `list_chart_families` | 65+ chart families → StoryKit blockTypes |
+| `bundle_url` | .zip export of one or more assets, optionally themed |
+| `get_story_contract` | The StorySpec grammar + rules for authoring |
+| `import_story` | **Host your model's essay/digest — keyless, returns share + claim links** |
+| `connect_account` | Optional: bind an account by email, mint a key (skips claiming) |
+| `story_status` | Status + links for a keyed story |
+
+## Environment
+
+- `STORYKIT_API_BASE` — override the API base (default `https://asset.storykit.space`)
+- `STORYKIT_API_KEY` — optional account key from `connect_account`; raises rate limits and
+  pre-attaches imports to your account
+
+## License
+
+MIT · _Created with love by [Story Kit](https://storykit.space)._

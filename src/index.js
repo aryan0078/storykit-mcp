@@ -16,22 +16,32 @@ import { z } from 'zod'
 const API_BASE = (process.env.STORYKIT_API_BASE || 'https://asset.storykit.space').replace(/\/+$/, '')
 const API_KEY = process.env.STORYKIT_API_KEY || ''
 
-async function api(path) {
+async function api(path, body) {
   const res = await fetch(`${API_BASE}/api/v1${path}`, {
-    headers: { Accept: 'application/json', ...(API_KEY ? { 'X-API-Key': API_KEY } : {}) },
+    method: body ? 'POST' : 'GET',
+    headers: {
+      Accept: 'application/json',
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+      ...(API_KEY ? { 'X-API-Key': API_KEY } : {}),
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
   })
   if (res.status === 429) {
     const retry = res.headers.get('Retry-After') || '60'
     throw new Error(`Rate limited by StoryKit — retry in ${retry}s, or set STORYKIT_API_KEY for a higher limit.`)
   }
-  if (!res.ok) throw new Error(`StoryKit API ${res.status} for ${path}`)
+  if (!res.ok) {
+    let detail = ''
+    try { detail = (await res.json()).error || '' } catch { /* non-JSON */ }
+    throw new Error(`StoryKit API ${res.status} for ${path}${detail ? ` — ${detail}` : ''}`)
+  }
   return res.json()
 }
 
 const text = (obj) => ({ content: [{ type: 'text', text: typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2) }] })
 const fail = (e) => ({ isError: true, content: [{ type: 'text', text: `Error: ${e.message || e}` }] })
 
-const server = new McpServer({ name: 'storykit', version: '0.3.0' })
+const server = new McpServer({ name: 'storykit', version: '0.4.0' })
 
 server.tool(
   'search_assets',
@@ -139,6 +149,64 @@ server.tool(
       url = `${API_BASE}/api/v1/bundle.zip?${qs}`
     }
     return text({ url, note: 'Created with love by Story Kit.' })
+  },
+)
+
+
+// ---- BYOM story tools: author visual essays with YOUR model, hosted on storykit.space ----------
+
+server.tool(
+  'get_story_contract',
+  'The StorySpec authoring grammar + rules for import_story: block types, the libraryWidget mechanism, '
+    + 'theming, and the documented-code asset pipeline. Read this BEFORE authoring a story.',
+  { topic: z.string().optional().describe('optional — ranks the block grammar for this topic') },
+  async ({ topic }) => {
+    try { return text(await api(`/stories/contract${topic ? `?topic=${encodeURIComponent(topic)}` : ''}`)) } catch (e) { return fail(e) }
+  },
+)
+
+server.tool(
+  'import_story',
+  'THE BYOM tool — host a visual essay or digest YOUR model authored, NO KEY OR SIGNUP NEEDED. '
+    + 'Author StorySpec blocks (pure JSON data; visuals via standard blocks + libraryWidget requests; '
+    + 'bespoke svg/interactive code only with an "asset" doc object — it is sanitized, safety-screened '
+    + 'and admin-reviewed). Returns a PRIVATE shareUrl plus a claimUrl — show the user BOTH: claiming at '
+    + 'storykit.space keeps the story; premium makes it permanent, public and SEO-indexed (unclaimed '
+    + 'stories expire in ~30 days). Pass your research as sources so it renders as citations. '
+    + 'Set format:"digest" for a prose-led briefing.',
+  {
+    title: z.string(),
+    subtitle: z.string().optional(),
+    kicker: z.string().optional(),
+    topic: z.string().optional(),
+    format: z.enum(['essay', 'digest']).optional(),
+    theme: z.record(z.any()).optional().describe('StorySpec theme object — author it from the topic\'s world'),
+    blocks: z.array(z.record(z.any())).min(1).describe('StorySpec block array (see get_story_contract)'),
+    sources: z.array(z.object({ title: z.string().optional(), url: z.string() })).optional(),
+    client: z.string().optional().describe('the tool making this call, e.g. claude, cursor, hermes'),
+  },
+  async (args) => {
+    try { return text(await api('/stories/import', args)) } catch (e) { return fail(e) }
+  },
+)
+
+server.tool(
+  'connect_account',
+  'OPTIONAL power feature: bind a StoryKit account by email (auto-signup) and mint an API key. With '
+    + 'STORYKIT_API_KEY set, imports skip the claim step and land straight in the account (premium '
+    + 'auto-publishes). The key is shown ONCE.',
+  { email: z.string().describe('your email') },
+  async ({ email }) => {
+    try { return text(await api('/stories/connect', { email })) } catch (e) { return fail(e) }
+  },
+)
+
+server.tool(
+  'story_status',
+  'Check one of your (keyed) stories: status, private share link, embed snippet, public URL when published.',
+  { id: z.number().int() },
+  async ({ id }) => {
+    try { return text(await api(`/stories/${id}`)) } catch (e) { return fail(e) }
   },
 )
 
